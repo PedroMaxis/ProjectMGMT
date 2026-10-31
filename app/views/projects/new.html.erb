@@ -1,11 +1,4 @@
-<% content_for :title, "New project" %>
-
-<h1>New project</h1>
-
-<%= render "form", project: @project %>
-
-<br>
-
-<div>
-  <%= link_to "Back to projects", projects_path %>
-</div>
+<% content_for :title, "Novo projeto" %>
+<% content_for :crumbs do %><%= link_to "Projetos", projects_path %><span class="sep">/</span><strong>Novo</strong><% end %>
+<div class="page-head"><div><h1>Novo projeto</h1><p>A chave curta vira o prefixo das tarefas, como WEB-1, WEB-2…</p></div></div>
+<section class="card card-pad" style="max-width: 860px"><%= render "form", project: @project %></section>

@@ -1,0 +1,29 @@
+/* Gráficos SVG, roadmap e cronogramas */
+.chart { width: 100%; height: auto; overflow: visible; }
+.chart .grid { stroke: var(--border); stroke-width: 1; } .chart .axis { fill: var(--faint); font-size: 11px; }
+.chart .line-ideal { stroke: var(--faint); stroke-width: 2; stroke-dasharray: 6 5; } .chart .line-real { stroke: var(--accent); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; } .chart .dot-real { fill: var(--surface); stroke: var(--accent); stroke-width: 2.5; }
+.chart .bar { fill: var(--accent); } .chart .bar-value { fill: var(--muted); font-size: 11px; font-weight: 600; }
+.donut-track { stroke: var(--surface-3); } .donut-center { fill: var(--text); font-size: 22px; font-weight: 700; }
+.legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
+.legend li { display: flex; align-items: center; gap: 8px; } .legend i { width: 10px; height: 10px; border-radius: 3px; } .legend b { margin-left: auto; font-variant-numeric: tabular-nums; }
+.donut-wrap { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.hbars { display: grid; gap: 12px; } .hbar { display: grid; grid-template-columns: 130px minmax(0, 1fr) 40px; align-items: center; gap: 10px; font-size: 13px; } .hbar .track { height: 8px; border-radius: 999px; background: var(--surface-3); overflow: hidden; } .hbar .track i { display: block; height: 100%; border-radius: inherit; background: var(--accent); } .hbar b { text-align: right; font-variant-numeric: tabular-nums; }
+
+.gantt { position: relative; overflow-x: auto; }
+.gantt-inner { position: relative; min-width: 760px; }
+.gantt-head { position: relative; height: 34px; margin-left: 220px; border-bottom: 1px solid var(--border); }
+.gantt-head span { position: absolute; top: 8px; transform: translateX(4px); font-size: 11.5px; color: var(--faint); font-weight: 500; }
+.gantt-row { position: relative; display: grid; grid-template-columns: 220px minmax(0, 1fr); align-items: center; min-height: 44px; border-bottom: 1px solid var(--border); }
+.gantt-row:last-child { border-bottom: 0; }
+.gantt-label { padding: 6px 12px 6px 20px; min-width: 0; } .gantt-label strong { display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .gantt-label small { display: block; }
+.gantt-label.group { background: var(--surface-2); font-weight: 600; }
+.gantt-track { position: relative; height: 44px; }
+.gantt-bar { position: absolute; top: 11px; height: 22px; border-radius: 6px; background: var(--pc, var(--accent)); color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; padding: 0 8px; overflow: hidden; white-space: nowrap; box-shadow: var(--shadow); }
+.gantt-bar .fill { position: absolute; inset: 0 auto 0 0; background: rgba(0, 0, 0, .22); }
+.gantt-bar span { position: relative; }
+.gantt-pin { position: absolute; top: 12px; width: 18px; height: 18px; transform: translateX(-9px) rotate(45deg); border-radius: 3px; background: var(--warn); box-shadow: var(--shadow); } .gantt-pin.done { background: var(--ok); }
+.gantt-grid { position: absolute; top: 34px; bottom: 0; left: 220px; right: 0; pointer-events: none; }
+.gantt-grid i { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); }
+.gantt-today { position: absolute; top: 34px; bottom: 0; width: 2px; background: var(--danger); opacity: .6; pointer-events: none; z-index: 2; }
+.gantt-today span { position: absolute; top: -18px; left: -14px; padding: 0 5px; border-radius: 4px; background: var(--danger); color: #fff; font-size: 10px; font-weight: 600; }
+.timeline-legend { display: flex; gap: 16px; padding: 10px 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }

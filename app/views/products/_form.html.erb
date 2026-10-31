@@ -1,0 +1,12 @@
+<%= form_with model: product do |f| %>
+  <% if product.errors.any? %><div class="errors"><strong>Não foi possível salvar:</strong><ul><% product.errors.full_messages.each { |m| concat tag.li(m) } %></ul></div><% end %>
+  <div class="form-grid">
+    <div class="field c4"><%= f.label :name %><%= f.text_field :name, required: true, autofocus: true %></div>
+    <div class="field c2"><%= f.label :color, "Cor" %><%= f.color_field :color %></div>
+    <div class="field c6"><%= f.label :description %><%= f.text_area :description, rows: 3 %></div>
+    <div class="field c6"><%= f.label :vision %><%= f.text_area :vision, rows: 4, placeholder: "Para quem é, qual problema resolve, onde queremos chegar." %></div>
+    <div class="field c3"><%= f.label :status %><%= f.select :status, Product::STATUSES.map { |s| [enum_label(:product, :status, s), s] } %></div>
+    <div class="field c3"><%= f.label :owner_id, "Responsável" %><%= f.collection_select :owner_id, User.alphabetical, :id, :name, include_blank: "Sem responsável" %></div>
+  </div>
+  <div class="form-actions"><%= link_to "Cancelar", (product.persisted? ? product_path(product) : products_path), class: "btn btn-ghost" %><%= f.submit (product.persisted? ? "Salvar produto" : "Criar produto"), class: "btn" %></div>
+<% end %>

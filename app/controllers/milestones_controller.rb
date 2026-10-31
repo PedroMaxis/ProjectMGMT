@@ -1,42 +1,34 @@
 class MilestonesController < ApplicationController
-  before_action :set_milestone, only: %i[edit update destroy]
-
-  def new
-    @milestone = Milestone.new(project_id: params[:project_id])
-  end
+  before_action :require_editor!
+  before_action :set_project
 
   def create
-    @milestone = Milestone.new(milestone_params)
-    if @milestone.save
-      redirect_to project_path(@milestone.project), notice: 'Milestone was successfully added.'
+    milestone = @project.milestones.new(milestone_params)
+    if milestone.save
+      redirect_to @project, notice: "Marco criado."
     else
-      render :new, status: :unprocessable_entity
+      redirect_to @project, alert: milestone.errors.full_messages.to_sentence
     end
   end
 
-  def edit; end
-
+  # alterna concluído/pendente
   def update
-    if @milestone.update(milestone_params)
-      redirect_to project_path(@milestone.project), notice: 'Milestone was successfully updated.'
+    milestone = @project.milestones.find(params[:id])
+    attrs = params[:toggle].present? ? { completed_on: milestone.completed? ? nil : Date.current } : milestone_params
+    if milestone.update(attrs)
+      redirect_to @project, notice: "Marco atualizado."
     else
-      render :edit, status: :unprocessable_entity
+      redirect_to @project, alert: milestone.errors.full_messages.to_sentence
     end
   end
 
   def destroy
-    project = @milestone.project
-    @milestone.destroy
-    redirect_to project_path(project), notice: 'Milestone was successfully removed.'
+    @project.milestones.find(params[:id]).destroy
+    redirect_to @project, notice: "Marco excluído."
   end
 
   private
 
-  def set_milestone
-    @milestone = Milestone.find(params[:id])
-  end
-
-  def milestone_params
-    params.require(:milestone).permit(:title, :description, :due_date, :completed, :project_id)
-  end
+  def set_project = @project = Project.find_by!(key: params[:project_key])
+  def milestone_params = params.require(:milestone).permit(:title, :description, :due_date)
 end

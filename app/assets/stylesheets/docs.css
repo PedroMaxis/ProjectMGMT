@@ -1,0 +1,25 @@
+/* Páginas (wiki) e Markdown */
+.docs { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; align-items: start; }
+.tree { position: sticky; top: 76px; padding: 12px; }
+.tree-title { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 10px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+.tree ul { list-style: none; margin: 0; padding: 0 0 0 14px; } .tree > ul { padding-left: 0; }
+.tree a { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 7px; color: var(--muted); font-size: 13px; }
+.tree a:hover { background: var(--surface-3); color: var(--text); } .tree a.active { background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
+.doc { padding: 30px 36px; }
+.doc-title { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; font-size: 28px; }
+.doc-meta { margin-bottom: 22px; color: var(--muted); font-size: 12.5px; }
+.prose { line-height: 1.7; font-size: 15px; max-width: 78ch; overflow-wrap: anywhere; }
+.prose h1 { font-size: 24px; margin: 28px 0 10px; } .prose h2 { font-size: 19px; margin: 26px 0 8px; } .prose h3 { font-size: 16px; margin: 20px 0 6px; }
+.prose p { margin: 0 0 12px; } .prose ul, .prose ol { padding-left: 22px; margin: 0 0 12px; } .prose li { margin: 3px 0; }
+.prose a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; }
+.prose code { padding: 1px 6px; border-radius: 5px; background: var(--surface-3); font: 13px var(--mono); }
+.prose pre { margin: 0 0 14px; padding: 14px 16px; border-radius: 10px; background: #14121c; color: #e8e6f5; overflow-x: auto; } .prose pre code { padding: 0; background: none; color: inherit; }
+.prose blockquote { margin: 0 0 12px; padding: 4px 14px; border-left: 3px solid var(--accent); color: var(--muted); background: var(--surface-2); border-radius: 0 8px 8px 0; }
+.prose table { border-collapse: collapse; margin: 0 0 14px; } .prose th, .prose td { padding: 7px 12px; border: 1px solid var(--border-2); } .prose th { background: var(--surface-2); }
+.editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.editor textarea { min-height: 420px; font: 13.5px/1.6 var(--mono); }
+.editor .preview { padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-2); min-height: 420px; overflow: auto; }
+@media (max-width: 1000px) { .docs, .editor { grid-template-columns: minmax(0, 1fr); } .tree { position: static; } .doc { padding: 20px; } }
+.tree-link { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 7px; color: var(--muted); font-size: 13px; }
+.tree-link:hover { background: var(--surface-3); color: var(--text); } .tree-link.active { background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
+.tree .tree-title a { display: grid; place-items: center; padding: 3px; border-radius: 6px; color: var(--muted); } .tree .tree-title a:hover { background: var(--surface-3); color: var(--text); }

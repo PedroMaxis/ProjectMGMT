@@ -1,0 +1,17 @@
+<%# Linha de tarefa para o backlog. Locals: issue, project, sprints (para mover entre sprints) %>
+<div class="issue-row">
+  <%= kind_icon issue.kind %>
+  <span class="key"><%= issue.key %></span>
+  <%= link_to issue.title, issue_path(issue), class: "t" %>
+  <% if issue.parent %><span class="epic-tag badge badge-accent truncate" style="max-width:140px"><%= issue.parent.title %></span><% end %>
+  <%= status_chip issue.status %>
+  <%= priority_icon issue.priority %>
+  <span class="est" title="Estimativa"><%= issue.estimate || "–" %></span>
+  <%= avatar issue.assignee, size: 24 %>
+  <% if can_edit? && local_assigns[:sprints] %>
+    <%= form_with model: issue, url: issue_path(issue), method: :patch, data: { controller: "autosubmit", action: "change->autosubmit#submit" }, class: "inline" do |f| %>
+      <%= hidden_field_tag :return_to, "backlog" %>
+      <%= f.select :sprint_id, [["Backlog", ""]] + sprints.map { |s| [s.name, s.id] }, { selected: issue.sprint_id.to_s }, class: "inline-select", "aria-label": "Mover #{issue.key} para" %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,50 @@
+<% content_for :title, "Relatórios · #{@project.name}" %>
+<%= render "shared/project_header", project: @project, current: "Relatórios" %>
+
+<div class="grid-2" style="margin-bottom:20px">
+  <section class="card">
+    <header>
+      <h2><%= icon :chart, size: 16 %> Burndown <% if @sprint %><small>· <%= @sprint.name %></small><% end %></h2>
+      <% completed = @project.sprints.to_a %>
+      <% if completed.size > 1 %>
+        <%= form_with url: reports_project_path(@project), method: :get, data: { controller: "autosubmit", action: "change->autosubmit#submit" } do %>
+          <%= select_tag :sprint, options_for_select(completed.map { |s| [s.name, s.id] }, @sprint&.id), class: "inline-select", "aria-label": "Sprint" %>
+        <% end %>
+      <% end %>
+    </header>
+    <div class="card-body">
+      <% if @burndown %>
+        <%= burndown_chart @burndown %>
+        <div class="row-wrap" style="margin-top:10px"><small><i class="leg" style="display:inline-block;width:18px;height:0;border-top:2px dashed var(--faint);vertical-align:middle"></i> ideal</small><small><i style="display:inline-block;width:18px;height:3px;background:var(--accent);vertical-align:middle;border-radius:2px"></i> real</small><small class="grow"></small><small><%= @sprint.done_points %> de <%= @burndown[:total] %> pontos concluídos</small></div>
+      <% else %>
+        <div class="empty small"><p>Nenhuma sprint para mostrar. Inicie uma sprint no backlog.</p></div>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="card">
+    <header><h2>Velocidade <small>pontos concluídos por sprint</small></h2></header>
+    <div class="card-body"><%= bar_chart @velocity %></div>
+  </section>
+</div>
+
+<div class="grid-3">
+  <section class="card"><header><h2>Vazão semanal</h2><small>tarefas concluídas</small></header><div class="card-body"><%= bar_chart @throughput %></div></section>
+  <section class="card"><header><h2>Por status</h2></header><div class="card-body donut-wrap"><%= donut_chart status_segments(@by_status), size: 110, thickness: 16, center: @by_status.values.sum %><ul class="legend grow"><% status_segments(@by_status).each { |s| concat tag.li(tag.i(style: "background: #{s[:color]}") + s[:label] + tag.b(s[:value])) } %></ul></div></section>
+  <section class="card"><header><h2>Por tipo</h2></header>
+    <div class="card-body hbars">
+      <% max = [@by_kind.values.max.to_i, 1].max %>
+      <% Issue::KINDS.reject { |k| k == "epic" }.each do |k| %><div class="hbar"><span class="row"><%= kind_icon k %> <%= enum_label(:issue, :kind, k) %></span><div class="track"><i style="width: <%= @by_kind.fetch(k, 0) * 100 / max %>%"></i></div><b><%= @by_kind.fetch(k, 0) %></b></div><% end %>
+    </div>
+  </section>
+</div>
+
+<section class="card" style="margin-top:20px">
+  <header><h2>Carga por pessoa</h2><small>pontos em aberto neste projeto</small></header>
+  <div class="card-body hbars">
+    <% max = [@by_assignee.values.max.to_i, 1].max %>
+    <% @by_assignee.sort_by { |_, v| -v }.each do |uid, pts| %>
+      <div class="hbar"><span class="row"><%= avatar @people[uid], size: 22 %><span class="truncate"><%= @people[uid]&.first_name || "Sem responsável" %></span></span><div class="track"><i style="width: <%= pts * 100 / max %>%"></i></div><b><%= pts %></b></div>
+    <% end %>
+  </div>
+</section>

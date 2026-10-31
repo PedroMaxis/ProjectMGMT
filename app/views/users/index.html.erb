@@ -1,0 +1,24 @@
+<% content_for :title, "Equipe" %>
+<% content_for :crumbs do %><strong>Equipe</strong><% end %>
+<div class="page-head"><div><h1>Equipe</h1><p>Quem faz parte, em que projetos atua e quanta carga tem agora.</p></div></div>
+<section class="card">
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Pessoa</th><th>Cargo</th><th>Papel</th><th class="right">Tarefas abertas</th><th class="right">Pontos</th><% if current_user.admin? %><th></th><% end %></tr></thead>
+    <tbody>
+      <% @users.each do |u| %>
+        <tr>
+          <td><%= link_to user_path(u), class: "row" do %><%= avatar u, size: 32 %><div><strong><%= u.name %></strong><br><small><%= u.email %></small></div><% end %></td>
+          <td><%= u.job_title %></td>
+          <td><%= badge enum_label(:user, :role, u.role), (u.admin? ? :accent : :neutral) %></td>
+          <td class="right num"><%= @open.fetch(u.id, 0) %></td>
+          <td class="right num"><%= @load.fetch(u.id, 0) %></td>
+          <% if current_user.admin? %>
+            <td class="right">
+              <% if u != current_user %><%= form_with model: u, url: user_path(u), method: :patch, data: { controller: "autosubmit", action: "change->autosubmit#submit" }, class: "inline" do |f| %><%= f.select :role, User::ROLES.map { |r| [enum_label(:user, :role, r), r] }, {}, class: "inline-select", "aria-label": "Papel de #{u.name}" %><% end %><% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table></div>
+</section>

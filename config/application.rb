@@ -21,7 +21,13 @@ module ProjectManagementApp
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    config.time_zone = "Brasilia"
+    config.i18n.default_locale = :"pt-BR"
+    config.i18n.available_locales = [ :"pt-BR", :en ]
+    config.i18n.fallbacks = [ :en ]
+
+    # Login de demonstração (um clique por perfil). Ligado por padrão: o projeto é uma vitrine de portfólio.
+    config.x.demo_login = ENV.fetch("DEMO_LOGIN", "true") == "true"
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

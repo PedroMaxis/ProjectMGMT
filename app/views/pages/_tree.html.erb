@@ -1,0 +1,8 @@
+<ul>
+  <% pages.each do |pg| %>
+    <li>
+      <%= link_to page_path(pg), class: ["tree-link", pg.id == current.id && "active"].compact.join(" ") do %><span><%= pg.icon || "📄" %></span><span class="truncate"><%= pg.title %></span><% end %>
+      <%= render "pages/tree", pages: pg.children, current: current if pg.children.any? %>
+    </li>
+  <% end %>
+</ul>

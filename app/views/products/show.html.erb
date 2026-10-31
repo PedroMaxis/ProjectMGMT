@@ -1,0 +1,77 @@
+<% content_for :title, @product.name %>
+<% content_for :crumbs do %><%= link_to "Produtos", products_path %><span class="sep">/</span><strong><%= @product.name %></strong><% end %>
+
+<div class="page-head">
+  <div>
+    <div class="eyebrow"><i class="dot" style="<%= project_color_style(@product) %>"></i><%= badge enum_label(:product, :status, @product.status), (@product.status == "active" ? :ok : :neutral) %><span>Responsável: <%= @product.owner&.name || "—" %></span></div>
+    <h1><%= @product.name %></h1>
+    <% if @product.description.present? %><p><%= @product.description %></p><% end %>
+  </div>
+  <% if can_edit? %><%= link_to edit_product_path(@product), class: "btn btn-ghost" do %><%= icon :edit, size: 16 %> Editar<% end %><% end %>
+</div>
+
+<div class="stats">
+  <div class="card stat"><span class="ico"><%= icon :target %></span><div><strong><%= @product.progress %>%</strong><span>Andamento geral</span></div></div>
+  <div class="card stat"><span class="ico"><%= icon :folder %></span><div><strong><%= @projects.size %></strong><span>Projetos</span></div></div>
+  <div class="card stat"><span class="ico ok"><%= icon :flag %></span><div><strong><%= @releases.count(&:released?) %></strong><span>Versões lançadas</span></div></div>
+  <div class="card stat"><span class="ico warn"><%= icon :clock %></span><div><strong><%= @releases.reject(&:released?).size %></strong><span>Versões a caminho</span></div></div>
+</div>
+
+<div class="grid-2">
+  <div class="stack">
+    <% if @product.vision.present? %>
+      <section class="card"><header><h2>Visão</h2></header><div class="card-body prose"><%= render_markdown @product.vision %></div></section>
+    <% end %>
+
+    <section class="card">
+      <header><h2><%= icon :flag, size: 16 %> Versões e roadmap</h2>
+        <% if can_edit? %>
+          <details class="menu"><summary class="btn btn-ghost btn-sm"><%= icon :plus, size: 14 %> Nova versão</summary>
+            <div class="pop"><%= form_with model: [@product, @release], url: product_releases_path(@product), class: "stack" do |f| %>
+              <div class="field"><%= f.label :name, "Nome (ex.: v2.1)" %><%= f.text_field :name, required: true %></div>
+              <div class="field"><%= f.label :status, "Situação" %><%= f.select :status, Release::STATUSES.map { |s| [enum_label(:release, :status, s), s] } %></div>
+              <div class="field"><%= f.label :target_date, "Data prevista" %><%= f.date_field :target_date %></div>
+              <div class="field"><%= f.label :notes, "Notas" %><%= f.text_area :notes, rows: 3 %></div>
+              <%= f.submit "Criar versão", class: "btn btn-sm" %>
+            <% end %></div>
+          </details>
+        <% end %>
+      </header>
+      <% if @releases.any? %>
+        <ul class="list">
+          <% @releases.each do |r| %>
+            <li style="align-items:flex-start">
+              <span class="stat" style="padding:0"><span class="ico <%= r.released? ? 'ok' : (r.status == 'in_progress' ? '' : 'warn') %>" style="width:34px;height:34px"><%= icon (r.released? ? :check : :flag), size: 16 %></span></span>
+              <div class="grow">
+                <strong><%= r.name %></strong> <%= badge enum_label(:release, :status, r.status), (r.released? ? :ok : :neutral) %>
+                <br><small><%= r.released? ? "Lançada em #{long_date r.released_on}" : "Prevista para #{long_date r.target_date}" %> · <%= r.issues.size %> tarefas</small>
+                <% if r.notes.present? %><p class="small" style="margin-top:4px"><%= r.notes %></p><% end %>
+                <div style="margin-top:6px; max-width:240px"><%= progress_bar r.progress, tone: :ok %></div>
+              </div>
+              <% if can_edit? && !r.released? %><%= button_to "Marcar como lançada", product_release_path(@product, r), method: :patch, params: { release: { status: "released" } }, class: "btn btn-ghost btn-sm", form: { class: "inline" } %><% end %>
+              <% if can_edit? %><%= button_to product_release_path(@product, r), method: :delete, class: "icon-btn", form: { class: "inline", data: { turbo_confirm: "Excluir a versão #{r.name}?" } }, title: "Excluir" do %><%= icon :trash, size: 14 %><% end %><% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %><div class="empty small"><p>Nenhuma versão ainda.</p></div><% end %>
+    </section>
+  </div>
+
+  <div class="stack">
+    <section class="card">
+      <header><h2>Projetos deste produto</h2></header>
+      <% if @projects.any? %>
+        <ul class="list"><% @projects.each do |p| %>
+          <li><i class="dot" style="<%= project_color_style(p) %>"></i><%= link_to p.name, project_path(p), class: "title grow" %><%= health_badge p %><small class="num"><%= p.progress %>%</small></li>
+        <% end %></ul>
+      <% else %><div class="empty small"><p>Nenhum projeto vinculado. Escolha o produto ao editar um projeto.</p></div><% end %>
+    </section>
+
+    <section class="card">
+      <header><h2>Documentos</h2><% if can_edit? %><%= link_to new_product_page_path(@product), class: "link small" do %>+ Nova página<% end %><% end %></header>
+      <% if @pages.any? %>
+        <ul class="list"><% @pages.each do |pg| %><li><span><%= pg.icon || "📄" %></span><%= link_to pg.title, page_path(pg), class: "title grow" %><small><%= ago pg.updated_at %></small></li><% end %></ul>
+      <% else %><div class="empty small"><p>Sem documentos. Registre decisões, especificações e guias aqui.</p></div><% end %>
+    </section>
+  </div>
+</div>

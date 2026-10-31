@@ -1,0 +1,11 @@
+<dialog class="palette" data-palette-target="dialog" aria-label="Busca global">
+  <div class="palette-box">
+    <div class="palette-input">
+      <%= icon :search %>
+      <input type="search" placeholder="Buscar tarefas, projetos, produtos, páginas e pessoas…" data-palette-target="input" data-action="input->palette#search keydown->palette#keydown" autocomplete="off" aria-label="Buscar">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="palette-results" data-palette-target="results" role="listbox"></div>
+    <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navegar</span><span><kbd>↵</kbd> abrir</span></div>
+  </div>
+</dialog>

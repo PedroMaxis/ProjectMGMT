@@ -1,0 +1,73 @@
+<% content_for :title, "Backlog · #{@project.name}" %>
+<%= render "shared/project_header", project: @project, current: "Backlog" %>
+
+<div class="row" style="justify-content:space-between; margin-bottom:16px">
+  <p class="muted">Planeje as sprints e escolha o que entra em cada uma. Use o seletor de cada tarefa para movê-la.</p>
+  <% if can_edit? %>
+    <details class="menu"><summary class="btn btn-ghost"><%= icon :plus, size: 16 %> Nova sprint</summary>
+      <div class="pop" style="min-width:340px"><%= form_with model: [@project, Sprint.new], url: project_sprints_path(@project), class: "stack" do |f| %>
+        <div class="field"><%= f.label :name, "Nome" %><%= f.text_field :name, required: true, value: "Sprint #{@project.sprints.count + 1}" %></div>
+        <div class="field"><%= f.label :goal, "Meta" %><%= f.text_field :goal, placeholder: "O que queremos entregar?" %></div>
+        <div class="form-grid"><div class="field c3"><%= f.label :start_date, "Início" %><%= f.date_field :start_date, required: true, value: Date.current %></div><div class="field c3"><%= f.label :end_date, "Fim" %><%= f.date_field :end_date, required: true, value: 2.weeks.from_now.to_date %></div></div>
+        <%= f.submit "Criar sprint", class: "btn btn-sm" %>
+      <% end %></div>
+    </details>
+  <% end %>
+</div>
+
+<% planned = @sprints.select { |s| s.status == "planned" } %>
+<% @sprints.each do |s| %>
+  <section class="card backlog-section" id="sprint-<%= s.id %>">
+    <header class="card-head">
+      <h2><%= icon :sprint, size: 16 %> <%= s.name %> <%= badge enum_label(:sprint, :status, s.status), (s.active? ? :ok : :neutral) %>
+        <small><%= short_date s.start_date %> → <%= short_date s.end_date %> · <%= s.work_issues.size %> tarefas · <%= s.total_points %> pts</small></h2>
+      <div class="row-wrap">
+        <% if can_edit? %>
+          <% if s.active? %>
+            <details class="menu"><summary class="btn btn-sm">Concluir sprint</summary>
+              <div class="pop"><%= form_with url: complete_project_sprint_path(@project, s), method: :post, class: "stack" do %>
+                <p class="small"><%= s.work_issues.unfinished.count %> tarefas pendentes. Para onde vão?</p>
+                <%= select_tag :move_to, options_for_select([["Voltar ao backlog", ""]] + planned.map { |p| [p.name, p.id] }) %>
+                <%= submit_tag "Concluir", class: "btn btn-sm" %>
+              <% end %></div>
+            </details>
+          <% else %>
+            <%= button_to "Iniciar sprint", start_project_sprint_path(@project, s), method: :post, class: "btn btn-sm", form: { class: "inline" }, disabled: @project.active_sprint.present? %>
+          <% end %>
+          <%= button_to project_sprint_path(@project, s), method: :delete, class: "icon-btn", form: { class: "inline", data: { turbo_confirm: "Excluir a sprint? As tarefas voltam ao backlog." } }, title: "Excluir sprint" do %><%= icon :trash, size: 15 %><% end %>
+        <% end %>
+      </div>
+    </header>
+    <% if s.goal.present? %><p class="small" style="padding:8px 20px; border-bottom:1px solid var(--border)">Meta: <%= s.goal %></p><% end %>
+    <% issues = s.work_issues.includes(:assignee, :parent).ordered %>
+    <% if issues.any? %><% issues.each do |i| %><%= render "issues/row", issue: i, project: @project, sprints: @sprints %><% end %>
+    <% else %><div class="empty small" style="border:0"><p>Sem tarefas. Mova itens do backlog para cá.</p></div><% end %>
+  </section>
+<% end %>
+
+<section class="card backlog-section">
+  <header class="card-head"><h2><%= icon :list, size: 16 %> Backlog <small><%= @backlog.size %> tarefas · <%= @backlog.sum(&:weight) %> pts</small></h2></header>
+  <form class="filters" style="padding:10px 20px; margin:0; border-bottom:1px solid var(--border)" method="get" action="<%= backlog_project_path(@project) %>" data-controller="autosubmit" data-action="change->autosubmit#submit">
+    <%= search_field_tag :q, params[:q], placeholder: "Filtrar backlog…", "aria-label": "Filtrar" %>
+    <%= select_tag :epic, options_for_select([["Todos os épicos", ""]] + @epics.map { |e| [e.title, e.id] }, params[:epic]), "aria-label": "Épico" %>
+  </form>
+  <% if @backlog.any? %><% @backlog.each do |i| %><%= render "issues/row", issue: i, project: @project, sprints: @sprints %><% end %>
+  <% else %><div class="empty small" style="border:0"><p>Backlog vazio. Tudo está em alguma sprint.</p></div><% end %>
+  <% if can_edit? %>
+    <%= form_with model: [@project, @project.issues.new], url: project_issues_path(@project), class: "sprint-form", style: "grid-template-columns: 1fr auto" do |f| %>
+      <%= hidden_field_tag :return_to, "backlog" %>
+      <%= f.text_field :title, placeholder: "Nova tarefa no backlog…", required: true, "aria-label": "Título da nova tarefa" %>
+      <%= f.submit "Adicionar", class: "btn btn-sm" %>
+    <% end %>
+  <% end %>
+</section>
+
+<% if @epics.any? %>
+  <section class="card backlog-section">
+    <header class="card-head"><h2><%= icon :layers, size: 16 %> Épicos</h2></header>
+    <% @epics.each do |e| %>
+      <% filhos = e.children %>
+      <div class="issue-row"><%= kind_icon "epic" %><span class="key"><%= e.key %></span><%= link_to e.title, issue_path(e), class: "t" %><span class="small"><%= filhos.count(&:done?) %>/<%= filhos.size %></span><div style="width:120px"><%= progress_bar (filhos.empty? ? 0 : filhos.count(&:done?) * 100 / filhos.size), tone: :ok %></div></div>
+    <% end %>
+  </section>
+<% end %>

@@ -1,0 +1,65 @@
+pt-BR:
+  activerecord:
+    models:
+      user: Usuário
+      product: Produto
+      release: Versão
+      project: Projeto
+      sprint: Sprint
+      issue: Tarefa
+      milestone: Marco
+      page: Página
+      comment: Comentário
+    attributes:
+      user: { name: Nome, email: E-mail, password: Senha, role: Papel, job_title: Cargo }
+      product: { name: Nome, description: Descrição, vision: Visão, status: Situação, owner: Responsável }
+      release: { name: Nome, status: Situação, target_date: Data prevista, released_on: Data de lançamento, notes: Notas }
+      project: { name: Nome, key: Chave, description: Descrição, start_date: Início, due_date: Prazo, priority: Prioridade, status: Situação, lead: Líder, product: Produto }
+      sprint: { name: Nome, goal: Meta, start_date: Início, end_date: Fim, status: Situação }
+      issue: { title: Título, description: Descrição, kind: Tipo, status: Status, priority: Prioridade, estimate: Estimativa, assignee: Responsável, start_date: Início, due_date: Prazo, sprint: Sprint, parent: Épico, release: Versão, labels: Etiquetas }
+      milestone: { title: Título, description: Descrição, due_date: Data }
+      page: { title: Título, body: Conteúdo }
+      comment: { body: Comentário }
+    errors:
+      messages:
+        invalid_key: "deve ter de 2 a 6 letras ou números, começando por letra (ex.: WEB)"
+        before_start: "não pode ser anterior ao início"
+        another_active: "Já existe uma sprint ativa neste projeto"
+        one_space: "A página deve pertencer a um projeto ou a um produto (um só)"
+        other_space: "deve estar no mesmo projeto ou produto"
+        cycle: "criaria um ciclo na hierarquia"
+        not_epic: "deve ser um épico"
+        epic_cannot_have_parent: "Um épico não pode estar dentro de outro épico"
+        other_project: "deve ser do mesmo projeto"
+        other_product: "deve ser do produto deste projeto"
+
+  enums:
+    user:
+      role: { admin: Administrador, member: Membro, viewer: Leitor }
+    product:
+      status: { active: Ativo, paused: Pausado, archived: Arquivado }
+    release:
+      status: { planned: Planejada, in_progress: Em andamento, released: Lançada }
+    project:
+      status: { planning: Planejamento, active: Em andamento, on_hold: Pausado, completed: Concluído }
+      priority: { low: Baixa, medium: Média, high: Alta }
+      health: { on_track: No prazo, at_risk: Em risco, late: Atrasado, done: Concluído, paused: Pausado }
+    membership:
+      role: { lead: Líder, member: Membro, viewer: Observador }
+    sprint:
+      status: { planned: Planejada, active: Ativa, completed: Concluída }
+    issue:
+      kind: { task: Tarefa, bug: Bug, story: História, epic: Épico }
+      status: { todo: A fazer, doing: Em andamento, review: Em revisão, done: Concluído }
+      priority: { low: Baixa, medium: Média, high: Alta, urgent: Urgente }
+    event:
+      created: "criou %{kind}"
+      status_changed: "mudou o status de %{from} para %{to}"
+      priority_changed: "mudou a prioridade de %{from} para %{to}"
+      title_changed: "renomeou a tarefa"
+      estimate_changed: "mudou a estimativa de %{from} para %{to}"
+      assigned_to: "atribuiu a %{to}"
+      assigned_none: "removeu o responsável"
+      sprint_in: "colocou na sprint %{to}"
+      sprint_out: "tirou da sprint %{from}"
+      commented: "comentou"

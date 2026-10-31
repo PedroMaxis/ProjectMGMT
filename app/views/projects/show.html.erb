@@ -1,10 +1,96 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, @project.name %>
+<%= render "shared/project_header", project: @project %>
 
-<%= render @project %>
+<div class="stats">
+  <div class="card stat"><span class="ico"><%= icon :target %></span><div><strong><%= @project.progress %>%</strong><span>Andamento (pontos)</span></div></div>
+  <div class="card stat"><span class="ico"><%= icon :list %></span><div><strong><%= @by_status.except("done").values.sum %></strong><span>Tarefas abertas</span></div></div>
+  <div class="card stat"><span class="ico ok"><%= icon :check %></span><div><strong><%= @by_status.fetch("done", 0) %></strong><span>Concluídas</span></div></div>
+  <div class="card stat"><span class="ico <%= @project.days_left.negative? ? 'danger' : 'warn' %>"><%= icon :clock %></span><div><strong><%= @project.days_left.abs %></strong><span><%= @project.days_left.negative? ? "dias de atraso" : "dias até o prazo" %></span></div></div>
+</div>
 
-<div>
-  <%= link_to "Edit this project", edit_project_path(@project) %> |
-  <%= link_to "Back to projects", projects_path %>
+<div class="grid-2">
+  <div class="stack">
+    <% if @sprint %>
+      <section class="card">
+        <header><h2><%= icon :sprint, size: 16 %> <%= @sprint.name %> <span class="badge badge-ok">Ativa</span></h2><%= link_to "Abrir quadro", board_project_path(@project), class: "link" %></header>
+        <div class="card-body">
+          <p class="muted" style="margin-bottom:10px"><%= @sprint.goal %></p>
+          <% pct = @sprint.total_points.zero? ? 0 : (@sprint.done_points * 100.0 / @sprint.total_points).round %>
+          <div class="row"><div class="grow"><%= progress_bar pct, tone: :ok %></div><small class="num"><%= @sprint.done_points %>/<%= @sprint.total_points %> pts</small></div>
+          <small>de <%= short_date @sprint.start_date %> a <%= short_date @sprint.end_date %></small>
+          <div style="margin-top:12px"><%= burndown_chart @sprint.burndown, height: 220 %></div>
+        </div>
+      </section>
+    <% else %>
+      <section class="card"><div class="empty small"><p>Sem sprint ativa. Planeje a próxima no backlog.</p><%= link_to "Ir para o backlog", backlog_project_path(@project), class: "btn btn-sm" %></div></section>
+    <% end %>
 
-  <%= button_to "Destroy this project", @project, method: :delete %>
+    <section class="card">
+      <header><h2>Atividade recente</h2></header>
+      <ul class="list">
+        <% @recent.each do |e| %>
+          <li style="align-items:flex-start"><%= avatar e.user, size: 24 %>
+            <div class="grow small" style="color:var(--text)"><strong><%= e.user&.first_name %></strong> <%= event_text e %> <% if e.issue %><%= link_to e.issue.key, issue_path(e.issue), class: "link mono" %> <span class="muted"><%= e.issue.title.truncate(50) %></span><% end %><br><small><%= ago e.created_at %></small></div>
+          </li>
+        <% end %>
+        <% if @recent.empty? %><li class="muted">Nenhuma atividade ainda.</li><% end %>
+      </ul>
+    </section>
+  </div>
+
+  <div class="stack">
+    <section class="card">
+      <header><h2>Equipe</h2>
+        <% if can_edit? && @candidates.any? %>
+          <details class="menu"><summary class="btn btn-ghost btn-sm"><%= icon :plus, size: 14 %> Adicionar</summary>
+            <div class="pop"><%= form_with model: [@project, Membership.new], url: project_memberships_path(@project), class: "stack" do |f| %>
+              <div class="field"><%= f.label :user_id, "Pessoa" %><%= f.collection_select :user_id, @candidates, :id, :name %></div>
+              <div class="field"><%= f.label :role, "Papel" %><%= f.select :role, Membership::ROLES.map { |r| [enum_label(:membership, :role, r), r] }, selected: "member" %></div>
+              <%= f.submit "Adicionar ao projeto", class: "btn btn-sm" %>
+            <% end %></div>
+          </details>
+        <% end %>
+      </header>
+      <ul class="list">
+        <% @members.each do |m| %>
+          <li><%= avatar m.user, size: 30 %><div class="grow"><%= link_to m.user.name, user_path(m.user), class: "title" %><br><small><%= m.user.job_title %></small></div><%= badge enum_label(:membership, :role, m.role), (m.role == "lead" ? :accent : :neutral) %>
+            <% if can_edit? && m.user != @project.lead %><%= button_to project_membership_path(@project, m), method: :delete, class: "icon-btn", form: { class: "inline", data: { turbo_confirm: "Remover #{m.user.name} do projeto?" } }, title: "Remover" do %><%= icon :x, size: 14 %><% end %><% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+
+    <section class="card">
+      <header><h2>Marcos</h2>
+        <% if can_edit? %>
+          <details class="menu"><summary class="btn btn-ghost btn-sm"><%= icon :plus, size: 14 %> Novo</summary>
+            <div class="pop"><%= form_with model: [@project, Milestone.new], url: project_milestones_path(@project), class: "stack" do |f| %>
+              <div class="field"><%= f.label :title, "Título" %><%= f.text_field :title, required: true %></div>
+              <div class="field"><%= f.label :due_date, "Data" %><%= f.date_field :due_date, required: true %></div>
+              <%= f.submit "Criar marco", class: "btn btn-sm" %>
+            <% end %></div>
+          </details>
+        <% end %>
+      </header>
+      <ul class="list">
+        <% @milestones.each do |m| %>
+          <li>
+            <% if can_edit? %><%= button_to project_milestone_path(@project, m, toggle: 1), method: :patch, class: "icon-btn", form: { class: "inline" }, title: (m.completed? ? "Reabrir" : "Concluir") do %><%= icon (m.completed? ? :check : :flag), size: 16 %><% end %><% end %>
+            <div class="grow"><span class="title <%= 'muted' if m.completed? %>" style="<%= 'text-decoration: line-through' if m.completed? %>"><%= m.title %></span><br><small><%= m.completed? ? "Concluído em #{long_date m.completed_on}" : "Previsto para #{long_date m.due_date}" %></small></div>
+            <% if m.late? %><%= badge "Atrasado", :danger %><% end %>
+            <% if can_edit? %><%= button_to project_milestone_path(@project, m), method: :delete, class: "icon-btn", form: { class: "inline", data: { turbo_confirm: "Excluir este marco?" } }, title: "Excluir" do %><%= icon :trash, size: 14 %><% end %><% end %>
+          </li>
+        <% end %>
+        <% if @milestones.empty? %><li class="muted">Nenhum marco definido.</li><% end %>
+      </ul>
+    </section>
+
+    <section class="card">
+      <header><h2>Tarefas por status</h2></header>
+      <div class="card-body donut-wrap">
+        <%= donut_chart status_segments(@by_status), size: 120, thickness: 18, center: @by_status.values.sum %>
+        <ul class="legend grow"><% status_segments(@by_status).each do |s| %><li><i style="background: <%= s[:color] %>"></i><%= s[:label] %><b><%= s[:value] %></b></li><% end %></ul>
+      </div>
+    </section>
+  </div>
 </div>

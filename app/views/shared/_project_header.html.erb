@@ -1,0 +1,31 @@
+<% content_for :crumbs do %>
+  <%= link_to "Projetos", projects_path %><span class="sep">/</span><%= link_to project.name, project_path(project) %><% if local_assigns[:current] %><span class="sep">/</span><strong><%= current %></strong><% end %>
+<% end %>
+
+<div class="page-head">
+  <div>
+    <div class="eyebrow">
+      <i class="dot" style="<%= project_color_style(project) %>"></i><span class="mono"><%= project.key %></span>
+      <%= health_badge project %>
+      <% if project.product %><%= link_to project.product.name, product_path(project.product), class: "badge badge-accent" %><% end %>
+    </div>
+    <h1><%= project.name %></h1>
+    <% if project.description.present? %><p><%= project.description %></p><% end %>
+  </div>
+  <div class="row-wrap">
+    <% if can_edit? %>
+      <%= link_to new_project_issue_path(project), class: "btn" do %><%= icon :plus, size: 16 %> Nova tarefa<% end %>
+      <%= link_to edit_project_path(project), class: "btn btn-ghost" do %><%= icon :edit, size: 16 %> Editar<% end %>
+    <% end %>
+  </div>
+</div>
+
+<nav class="tabs" aria-label="Seções do projeto">
+  <% first_doc = project.pages.roots.first %>
+  <%= link_to project_path(project), class: ["tab", action_name == "show" && controller_name == "projects" && "active"].compact.join(" ") do %><%= icon :home, size: 16 %>Visão geral<% end %>
+  <%= link_to board_project_path(project), class: ["tab", action_name == "board" && "active"].compact.join(" ") do %><%= icon :board, size: 16 %>Quadro<% end %>
+  <%= link_to backlog_project_path(project), class: ["tab", action_name == "backlog" && "active"].compact.join(" ") do %><%= icon :list, size: 16 %>Backlog<% end %>
+  <%= link_to timeline_project_path(project), class: ["tab", action_name == "timeline" && "active"].compact.join(" ") do %><%= icon :calendar, size: 16 %>Cronograma<% end %>
+  <%= link_to reports_project_path(project), class: ["tab", action_name == "reports" && "active"].compact.join(" ") do %><%= icon :chart, size: 16 %>Relatórios<% end %>
+  <%= link_to (first_doc ? page_path(first_doc) : new_project_page_path(project)), class: ["tab", controller_name == "pages" && "active"].compact.join(" ") do %><%= icon :file, size: 16 %>Documentos<% end %>
+</nav>

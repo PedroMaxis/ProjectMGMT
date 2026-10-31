@@ -1,0 +1,52 @@
+<% content_for :title, "Quadro · #{@project.name}" %>
+<% content_for :main_class, "full" %>
+<%= render "shared/project_header", project: @project, current: "Quadro" %>
+
+<% if @sprint && !@show_all %>
+  <div class="sprint-banner">
+    <span class="badge badge-ok">Sprint ativa</span><strong><%= @sprint.name %></strong>
+    <span class="goal grow"><%= @sprint.goal %></span>
+    <small><%= short_date @sprint.start_date %> → <%= short_date @sprint.end_date %> · <%= @sprint.done_points %>/<%= @sprint.total_points %> pts</small>
+    <%= link_to "Ver todas as tarefas", board_project_path(@project, scope: "all"), class: "link small" %>
+    <%= link_to "Relatório", reports_project_path(@project), class: "link small" %>
+  </div>
+<% elsif @sprint %>
+  <div class="sprint-banner"><span class="badge">Todas as tarefas</span><span class="grow"></span><%= link_to "Voltar para #{@sprint.name}", board_project_path(@project), class: "link small" %></div>
+<% else %>
+  <div class="sprint-banner"><span class="badge badge-warn">Sem sprint ativa</span><span class="goal grow">Mostrando todas as tarefas do projeto.</span><%= link_to "Planejar uma sprint", backlog_project_path(@project), class: "link small" %></div>
+<% end %>
+
+<%= form_with url: board_project_path(@project), method: :get, class: "filters", data: { controller: "autosubmit", action: "change->autosubmit#submit" } do %>
+  <%= hidden_field_tag :scope, params[:scope] if params[:scope] %>
+  <%= search_field_tag :q, params[:q], placeholder: "Filtrar tarefas…", "aria-label": "Filtrar", "data-action": "change->autosubmit#submit" %>
+  <%= select_tag :assignee, options_for_select([["Todas as pessoas", ""], ["Sem responsável", "none"]] + @members.map { |m| [m.name, m.id] }, params[:assignee]), "aria-label": "Responsável" %>
+  <%= select_tag :kind, options_for_select([["Todos os tipos", ""]] + (Issue::KINDS - %w[epic]).map { |k| [enum_label(:issue, :kind, k), k] }, params[:kind]), "aria-label": "Tipo" %>
+  <%= select_tag :epic, options_for_select([["Todos os épicos", ""]] + @epics.map { |e| [e.title, e.id] }, params[:epic]), "aria-label": "Épico" %>
+  <% if @filters_active %><%= link_to "Limpar filtros", board_project_path(@project, scope: params[:scope]), class: "link small" %><% end %>
+<% end %>
+
+<div class="board" data-controller="board">
+  <% Issue::STATUSES.each do |status| %>
+    <% issues = @columns[status] %>
+    <section class="column" data-board-target="column" data-status="<%= status %>" aria-label="<%= enum_label(:issue, :status, status) %>">
+      <div class="column-head"><i class="stripe"></i><%= enum_label(:issue, :status, status) %><span class="count" data-count><%= issues.size %></span><span class="pts"><span data-points><%= issues.sum(&:weight) %></span> pts</span></div>
+      <div class="cards" data-cards>
+        <% issues.each do |i| %><%= render "issues/card", issue: i %><% end %>
+      </div>
+      <% if can_edit? %>
+        <details class="disclosure">
+          <summary class="add-card"><%= icon :plus, size: 14 %> Adicionar</summary>
+          <%= form_with model: [@project, @project.issues.new], url: project_issues_path(@project), class: "quick-form" do |f| %>
+            <%= hidden_field_tag :return_to, "board" %>
+            <%= f.hidden_field :status, value: status %>
+            <%= f.hidden_field :sprint_id, value: @sprint&.id unless @show_all %>
+            <%= f.text_field :title, placeholder: "Título da tarefa", required: true, maxlength: 200, "aria-label": "Título" %>
+            <%= f.submit "Criar", class: "btn btn-sm" %>
+          <% end %>
+        </details>
+      <% end %>
+    </section>
+  <% end %>
+</div>
+
+<turbo-frame id="issue_panel" class="drawer-frame"></turbo-frame>

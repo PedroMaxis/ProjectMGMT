@@ -1,0 +1,59 @@
+/* Quadro Kanban, backlog e painel lateral da tarefa */
+.filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.filters select, .filters input[type=search] { width: auto; min-width: 150px; height: 34px; padding: 0 10px; font-size: 13px; }
+.filters select { padding-right: 28px; cursor: pointer; }
+.board { display: grid; grid-template-columns: repeat(4, minmax(250px, 1fr)); gap: 14px; align-items: start; overflow-x: auto; padding-bottom: 8px; }
+.column { padding: 0; min-height: 200px; border-radius: var(--radius); transition: background .12s; }
+.column.over { background: var(--accent-soft); outline: 2px dashed var(--accent); outline-offset: 4px; }
+.column-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding: 10px 2px 8px; border-top: 2px solid var(--s-todo); font-weight: 600; }
+.column[data-status=doing] .column-head { border-color: var(--s-doing); } .column[data-status=review] .column-head { border-color: var(--s-review); } .column[data-status=done] .column-head { border-color: var(--s-done); }
+.column-head .count { color: var(--muted); font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.column-head .pts { margin-left: auto; color: var(--faint); font-size: 12px; font-weight: 500; }
+.cards { display: grid; gap: 8px; min-height: 12px; }
+.card-issue { display: grid; gap: 8px; padding: 12px 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: grab; transition: border-color .12s, transform .12s; }
+.card-issue:hover { border-color: var(--ink); }
+.card-issue.dragging { opacity: .4; cursor: grabbing; }
+.card-issue .t { font-weight: 500; line-height: 1.35; color: var(--text); }
+.card-issue.is-done .t { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--faint); }
+.card-issue .foot { display: flex; align-items: center; gap: 8px; }
+.card-issue .key { font: 500 11.5px var(--mono); color: var(--muted); }
+.card-issue .epic-tag { align-self: start; padding: 0; color: var(--accent-text); font-size: 11px; font-weight: 600; letter-spacing: .01em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-issue .est { margin-left: auto; min-width: 22px; padding: 0 6px; border-radius: 999px; background: var(--surface-3); color: var(--muted); font-size: 11.5px; font-weight: 600; text-align: center; }
+.add-card { display: block; width: 100%; margin-top: 8px; padding: 7px; border: 1px dashed var(--border-2); border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; text-align: center; }
+.add-card:hover { border-color: var(--accent); color: var(--accent-text); background: var(--surface); }
+.quick-form { display: grid; gap: 6px; margin-top: 8px; }
+.sprint-banner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.sprint-banner .goal { color: var(--muted); }
+
+.drawer-frame { position: fixed; inset: 0 0 0 auto; z-index: 40; width: min(560px, 100vw); pointer-events: none; }
+.drawer-frame:empty { display: none; }
+.drawer { pointer-events: auto; height: 100vh; overflow-y: auto; background: var(--surface); border-left: 1px solid var(--border-2); box-shadow: var(--shadow-lg); animation: slide-in .18s ease-out; }
+@keyframes slide-in { from { transform: translateX(24px); opacity: 0; } }
+.drawer-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--border); background: var(--surface); }
+
+.backlog-section { margin-bottom: 20px; }
+.backlog-section .card-head h2 { display: flex; align-items: center; gap: 10px; }
+.issue-row { display: flex; align-items: center; gap: 10px; padding: 9px 20px; border-bottom: 1px solid var(--border); }
+.issue-row:last-child { border-bottom: 0; } .issue-row:hover { background: var(--surface-2); }
+.issue-row .key { font: 500 12px var(--mono); color: var(--muted); min-width: 64px; }
+.issue-row .t { flex: 1; min-width: 0; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.issue-row .t:hover { color: var(--accent-text); }
+.issue-row .est { min-width: 26px; padding: 0 7px; border-radius: 999px; background: var(--surface-3); color: var(--muted); font-size: 11.5px; font-weight: 600; text-align: center; }
+.sprint-form { display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 10px; align-items: end; padding: 14px 20px; border-top: 1px solid var(--border); background: var(--surface-2); }
+
+.issue-detail { display: grid; gap: 18px; padding: 20px; }
+.issue-detail h1 { font-size: 20px; }
+.prop-grid { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px 12px; align-items: center; font-size: 13px; }
+.prop-grid dt { color: var(--muted); } .prop-grid dd { margin: 0; min-width: 0; }
+.prop-grid select, .prop-grid input { padding: 4px 8px; font-size: 13px; }
+.issue-page { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.timeline li { display: flex; gap: 10px; font-size: 13px; color: var(--muted); }
+.timeline strong { color: var(--text); font-weight: 600; }
+.comment { display: flex; gap: 12px; }
+.comment .bubble { flex: 1; min-width: 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); }
+.comment .who { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 13px; }
+.comment .who small { margin-left: auto; }
+@media (max-width: 1000px) { .issue-page { grid-template-columns: minmax(0, 1fr); } .sprint-form { grid-template-columns: minmax(0, 1fr); } }
+
+.column-head .stripe { display: none; }

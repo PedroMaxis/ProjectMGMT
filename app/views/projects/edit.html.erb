@@ -1,12 +1,6 @@
-<% content_for :title, "Editing project" %>
-
-<h1>Editing project</h1>
-
-<%= render "form", project: @project %>
-
-<br>
-
-<div>
-  <%= link_to "Show this project", @project %> |
-  <%= link_to "Back to projects", projects_path %>
+<% content_for :title, "Editar #{@project.name}" %>
+<% content_for :crumbs do %><%= link_to "Projetos", projects_path %><span class="sep">/</span><%= link_to @project.name, project_path(@project) %><span class="sep">/</span><strong>Editar</strong><% end %>
+<div class="page-head"><div><h1>Editar projeto</h1></div>
+  <%= button_to project_path(@project), method: :delete, class: "btn btn-danger", form: { data: { turbo_confirm: "Excluir o projeto e todas as suas tarefas? Isso não pode ser desfeito." }, class: "inline" } do %><%= icon :trash, size: 16 %> Excluir projeto<% end %>
 </div>
+<section class="card card-pad" style="max-width: 860px"><%= render "form", project: @project %></section>

@@ -1,0 +1,22 @@
+<% content_for :title, "Produtos" %>
+<% content_for :crumbs do %><strong>Produtos</strong><% end %>
+<div class="page-head">
+  <div><h1>Produtos</h1><p>O que a empresa constrói e mantém por anos. Cada produto tem visão, versões e projetos que entregam partes dele.</p></div>
+  <% if can_edit? %><%= link_to new_product_path, class: "btn" do %><%= icon :plus, size: 16 %> Novo produto<% end %><% end %>
+</div>
+<% if @products.any? %>
+  <div class="grid-cards">
+    <% @products.each do |p| %>
+      <%= link_to product_path(p), class: "card project-card", style: project_color_style(p) do %>
+        <div class="row"><h3 class="grow"><%= p.name %></h3><%= badge enum_label(:product, :status, p.status), (p.status == "active" ? :ok : :neutral) %></div>
+        <p class="small" style="margin-top:6px; min-height:34px"><%= p.description.to_s.truncate(110) %></p>
+        <div class="meta"><span><%= pluralize(p.projects.size, "projeto") %> · <%= pluralize(p.releases.size, "versão", "versões") %></span><span class="num"><%= p.progress %>%</span></div>
+        <%= progress_bar p.progress %>
+        <div class="row" style="margin-top:12px"><%= avatar p.owner, size: 24 %><small><%= p.owner&.name || "Sem responsável" %></small></div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty"><div class="empty-icon"><%= icon :box, size: 26 %></div><h2>Nenhum produto ainda</h2><p>Crie o primeiro para organizar versões e projetos.</p></div>
+<% end %>
+<% if @archived.any? %><p class="small" style="margin-top:20px">Arquivados: <%= safe_join(@archived.map { |a| link_to(a.name, product_path(a), class: "link") }, ", ") %></p><% end %>

@@ -1,16 +1,34 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Projetos" %>
+<% content_for :crumbs do %><strong>Projetos</strong><% end %>
 
-<% content_for :title, "Projects" %>
-
-<h1>Projects</h1>
-
-<div id="projects">
-  <% @projects.each do |project| %>
-    <%= render project %>
-    <p>
-      <%= link_to "Show this project", project %>
-    </p>
-  <% end %>
+<div class="page-head">
+  <div><h1>Projetos</h1><p>Tudo que a equipe está entregando, com andamento e saúde de cada um.</p></div>
+  <% if can_edit? %><%= link_to new_project_path, class: "btn" do %><%= icon :plus, size: 16 %> Novo projeto<% end %><% end %>
 </div>
 
-<%= link_to "New project", new_project_path %>
+<nav class="tabs" aria-label="Filtrar por situação">
+  <%= link_to "Todos", projects_path, class: ["tab", @status.nil? && "active"].compact.join(" ") %>
+  <% Project::STATUSES.each do |s| %>
+    <%= link_to projects_path(status: s), class: ["tab", @status == s && "active"].compact.join(" ") do %><%= enum_label(:project, :status, s) %> <small><%= @counts[s].to_i %></small><% end %>
+  <% end %>
+</nav>
+
+<% if @projects.any? %>
+  <div class="grid-cards">
+    <% @projects.each do |p| %>
+      <%= link_to project_path(p), class: "card project-card", style: project_color_style(p) do %>
+        <div class="row"><h3 class="grow truncate"><%= p.name %></h3><span class="mono small"><%= p.key %></span></div>
+        <p class="small truncate" style="margin-top:4px"><%= p.description.presence || "Sem descrição" %></p>
+        <div class="meta"><span><%= enum_label(:project, :status, p.status) %> · prazo <%= short_date p.due_date %></span><%= health_badge p %></div>
+        <%= progress_bar p.progress %>
+        <div class="row" style="margin-top:12px">
+          <%= avatar p.lead, size: 24 %><small class="grow truncate"><%= p.lead&.name || "Sem líder" %></small>
+          <% if p.product %><span class="badge badge-accent"><%= p.product.name %></span><% end %>
+          <small class="num"><%= p.progress %>%</small>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty"><div class="empty-icon"><%= icon :folder, size: 26 %></div><h2>Nenhum projeto aqui</h2><p>Crie um projeto para organizar tarefas, sprints e documentos.</p></div>
+<% end %>

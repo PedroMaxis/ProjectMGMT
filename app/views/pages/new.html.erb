@@ -1,0 +1,4 @@
+<% content_for :title, "Nova página" %>
+<% content_for :crumbs do %><%= link_to @space.name, @space %><span class="sep">/</span><strong>Nova página</strong><% end %>
+<div class="page-head"><div><h1>Nova página</h1><p>Em <%= @space.name %></p></div></div>
+<section class="card card-pad"><%= render "form", page: @page, space: @space %></section>

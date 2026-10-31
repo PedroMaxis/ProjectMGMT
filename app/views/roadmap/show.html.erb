@@ -1,0 +1,36 @@
+<% content_for :title, "Roadmap" %>
+<% content_for :main_class, "full" %>
+<% content_for :crumbs do %><strong>Roadmap</strong><% end %>
+<div class="page-head"><div><h1>Roadmap</h1><p>Projetos e versões dos produtos ao longo do tempo.</p></div></div>
+
+<section class="card gantt">
+  <div class="gantt-inner">
+    <div class="gantt-head"><% month_ticks(@range).each do |d, pct| %><span style="left: <%= pct %>%"><%= l(d, format: "%b/%y") %></span><% end %></div>
+    <div class="gantt-grid"><% month_ticks(@range).each do |_, pct| %><i style="left: <%= pct %>%"></i><% end %></div>
+    <% if @range.cover?(Date.current) %><div class="gantt-today" style="left: calc(220px + (100% - 220px) * <%= pct_in(@range, Date.current) / 100.0 %>)"><span>hoje</span></div><% end %>
+    <% barra = ->(ini, fim) { l = pct_in(@range, ini); w = [pct_in(@range, fim) - l, 0.8].max; "left: #{l}%; width: #{w}%" } %>
+
+    <% @products.each do |prod| %>
+      <div class="gantt-row"><div class="gantt-label group"><%= link_to prod.name, product_path(prod), class: "title" %><small>produto · <%= prod.progress %>%</small></div>
+        <div class="gantt-track">
+          <% prod.releases.select(&:date).each do |r| %><i class="gantt-pin <%= 'done' if r.released? %>" style="left: <%= pct_in(@range, r.date) %>%" title="<%= r.name %> · <%= long_date r.date %>"></i><% end %>
+        </div></div>
+      <% prod.releases.select(&:date).sort_by(&:date).each do |r| %>
+        <div class="gantt-row"><div class="gantt-label"><strong><%= r.name %></strong><small><%= enum_label(:release, :status, r.status) %> · <%= long_date r.date %></small></div><div class="gantt-track"><i class="gantt-pin <%= 'done' if r.released? %>" style="left: <%= pct_in(@range, r.date) %>%"></i></div></div>
+      <% end %>
+      <% prod.projects.select { |p| p.status != "completed" }.sort_by(&:start_date).each do |p| %>
+        <div class="gantt-row"><div class="gantt-label"><%= link_to p.name, project_path(p), class: "title" %><small><%= p.key %> · <%= health_badge p %></small></div>
+          <div class="gantt-track"><div class="gantt-bar" style="<%= barra.(p.start_date, p.due_date) %>; <%= project_color_style(p) %>"><div class="fill" style="width: <%= p.progress %>%"></div><span><%= p.progress %>%</span></div></div></div>
+      <% end %>
+    <% end %>
+
+    <% if @loose.any? %>
+      <div class="gantt-row"><div class="gantt-label group"><strong>Sem produto</strong></div><div class="gantt-track"></div></div>
+      <% @loose.each do |p| %>
+        <div class="gantt-row"><div class="gantt-label"><%= link_to p.name, project_path(p), class: "title" %><small><%= p.key %></small></div>
+          <div class="gantt-track"><div class="gantt-bar" style="<%= barra.(p.start_date, p.due_date) %>; <%= project_color_style(p) %>"><div class="fill" style="width: <%= p.progress %>%"></div><span><%= p.progress %>%</span></div></div></div>
+      <% end %>
+    <% end %>
+  </div>
+  <div class="timeline-legend"><span>Barra = projeto (faixa escura = concluído)</span><span>Losango = versão</span><span>Linha vermelha = hoje</span></div>
+</section>
