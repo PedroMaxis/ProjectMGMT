@@ -1,31 +1,33 @@
-/* Tokens, reset e tipografia. Cor de destaque: violeta. Tema escuro via [data-theme="dark"]. */
+/* Tokens, reset e tipografia. Base grafite, violeta só como destaque. Tema escuro via [data-theme="dark"]. */
 :root {
-  --bg: #f5f5f9; --surface: #ffffff; --surface-2: #fafafd; --surface-3: #f0f0f6;
-  --border: #e6e6ef; --border-2: #d4d4e2; --text: #1c1b29; --muted: #6b6a80; --faint: #9b9ab0;
-  --accent: #7c3aed; --accent-2: #6d28d9; --accent-soft: #f2ebff; --accent-text: #6d28d9;
-  --side: #17151f; --side-2: #221f2e; --side-text: #b9b7cc; --side-muted: #7b7990;
-  --ok: #15803d; --ok-soft: #e4f6ea; --warn: #b45309; --warn-soft: #fff3dc; --danger: #b91c1c; --danger-soft: #fdeaea;
-  --s-todo: #94a3b8; --s-doing: #8b5cf6; --s-review: #f59e0b; --s-done: #22c55e;
-  --shadow: 0 1px 2px rgba(20, 18, 40, .05), 0 1px 3px rgba(20, 18, 40, .04); --shadow-lg: 0 12px 40px rgba(20, 18, 40, .22);
-  --radius: 12px; --radius-sm: 8px;
-  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --bg: #f4f4f5; --surface: #ffffff; --surface-2: #fafafa; --surface-3: #f1f1f3;
+  --border: #e4e4e7; --border-2: #d4d4d8; --text: #18181b; --muted: #636369; --faint: #8e8e96;
+  --ink: #18181b; --ink-2: #3f3f46; --on-ink: #fafafa;
+  --accent: #6d4aff; --accent-2: #5b38f0; --accent-soft: #efebff; --accent-text: #5b38f0;
+  --side: #ffffff; --side-2: #f4f4f5; --side-text: #3f3f46; --side-muted: #8e8e96;
+  --ok: #157f3b; --ok-soft: #e3f5ea; --warn: #a85a07; --warn-soft: #fdf0d8; --danger: #b4231f; --danger-soft: #fce9e8;
+  --s-todo: #a1a1aa; --s-doing: #6d4aff; --s-review: #e8930c; --s-done: #1f9d55;
+  --shadow: none; --shadow-lg: 0 16px 48px rgba(24, 24, 27, .18);
+  --radius: 10px; --radius-sm: 8px;
+  --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 [data-theme="dark"] {
-  --bg: #0e0d15; --surface: #16141f; --surface-2: #1a1824; --surface-3: #211f2d;
-  --border: #2a2738; --border-2: #3a3750; --text: #ecebf6; --muted: #9a98b2; --faint: #6f6d86;
-  --accent: #9061f9; --accent-2: #a78bfa; --accent-soft: #272040; --accent-text: #b79bff;
-  --side: #0a0910; --side-2: #17151f;
-  --ok: #4ade80; --ok-soft: #12301f; --warn: #fbbf24; --warn-soft: #382a0c; --danger: #f87171; --danger-soft: #3a1618;
-  --shadow: 0 1px 2px rgba(0, 0, 0, .4); --shadow-lg: 0 12px 40px rgba(0, 0, 0, .6);
+  --bg: #09090b; --surface: #111113; --surface-2: #151518; --surface-3: #1b1b1f;
+  --border: #25252b; --border-2: #36363e; --text: #f4f4f5; --muted: #a1a1aa; --faint: #71717a;
+  --ink: #f4f4f5; --ink-2: #d4d4d8; --on-ink: #09090b;
+  --accent: #8b73ff; --accent-2: #a191ff; --accent-soft: #221d3f; --accent-text: #b4a5ff;
+  --side: #0c0c0e; --side-2: #1b1b1f; --side-text: #c4c4cc; --side-muted: #71717a;
+  --ok: #4ade80; --ok-soft: #10281a; --warn: #fbbf24; --warn-soft: #33260a; --danger: #f87171; --danger-soft: #36171a;
+  --shadow: none; --shadow-lg: 0 16px 48px rgba(0, 0, 0, .6);
 }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 400 14px/1.5 var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; font-feature-settings: "cv11", "ss01"; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 14px/1.5 var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; font-feature-settings: "ss01"; }
 a { color: inherit; text-decoration: none; }
 h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -.01em; line-height: 1.25; }
-h1 { font-size: 24px; letter-spacing: -.02em; } h2 { font-size: 16px; } h3 { font-size: 14px; }
+h1 { font-size: 28px; letter-spacing: -.03em; line-height: 1.1; } h2 { font-size: 15px; } h3 { font-size: 14px; }
 p { margin: 0; }
 small, .small { font-size: 12px; color: var(--muted); }
 .muted { color: var(--muted); }

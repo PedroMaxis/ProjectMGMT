@@ -13,10 +13,10 @@
 </div>
 
 <div class="stats">
-  <div class="card stat"><span class="ico"><%= icon :folder %></span><div><strong><%= @projects.count { |p| p.status == "active" } %></strong><span>Projetos em andamento</span></div></div>
-  <div class="card stat"><span class="ico"><%= icon :list %></span><div><strong><%= abertas %></strong><span>Tarefas abertas</span></div></div>
-  <div class="card stat"><span class="ico ok"><%= icon :check %></span><div><strong><%= semana %></strong><span>Concluídas esta semana</span></div></div>
-  <div class="card stat"><span class="ico <%= @overdue.any? ? 'danger' : 'ok' %>"><%= icon :alert %></span><div><strong><%= Issue.work.overdue.count %></strong><span>Tarefas atrasadas</span></div></div>
+  <div class="stat"><div><strong><%= @projects.count { |p| p.status == "active" } %></strong><span>Projetos em andamento</span></div></div>
+  <div class="stat"><div><strong><%= abertas %></strong><span>Tarefas abertas</span></div></div>
+  <div class="stat"><div><strong><%= semana %></strong><span>Concluídas esta semana</span></div></div>
+  <div class="stat <%= "danger" if @overdue.any? %>"><div><strong><%= Issue.work.overdue.count %></strong><span>Tarefas atrasadas</span></div></div>
 </div>
 
 <div class="grid-2">
