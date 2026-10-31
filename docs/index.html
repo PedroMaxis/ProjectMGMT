@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prumo | Gestão de projetos e produtos</title>
+<meta name="description" content="Prumo: quadro kanban, sprints, burndown, roadmap de produto e documentos em Markdown. Projeto Rails 8.1 com 76 testes.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f4f5;--surface:#fff;--text:#18181b;--muted:#636369;--border:#e4e4e7;--ink:#18181b;--on-ink:#fafafa;--accent:#5b38f0;--code:#f1f1f3}
+@media (prefers-color-scheme:dark){:root{--bg:#09090b;--surface:#111113;--text:#f4f4f5;--muted:#a1a1aa;--border:#25252b;--ink:#f4f4f5;--on-ink:#09090b;--accent:#b4a5ff;--code:#1b1b1f}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.6 "Geist",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}.wrap{width:min(1120px,100% - 32px);margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.03em;font-size:18px;text-decoration:none}
+.mark{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--ink);color:var(--on-ink);font-size:15px}
+.btn{display:inline-flex;align-items:center;padding:9px 16px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--on-ink);font-weight:500;text-decoration:none;font-size:15px;transition:transform .1s}
+.btn:active{transform:translateY(1px)}.btn.ghost{background:transparent;color:var(--text);border-color:var(--border)}
+.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:center;padding:48px 0 72px}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.05;letter-spacing:-.04em;margin:0 0 18px;font-weight:600}
+.lead{color:var(--muted);font-size:18px;max-width:44ch;margin:0 0 28px}.cta{display:flex;gap:10px;flex-wrap:wrap}
+.shot{width:100%;height:auto;border:1px solid var(--border);border-radius:10px;display:block;background:var(--surface)}
+.hero .shot{box-shadow:0 24px 60px rgba(24,24,27,.16)}
+h2{font-size:clamp(24px,3vw,32px);letter-spacing:-.03em;margin:0 0 20px;font-weight:600}
+section{padding:40px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+figure{margin:0}figcaption{margin-top:10px;font-weight:500}figcaption small{display:block;color:var(--muted);font-weight:400;font-size:14px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
+.facts div{padding:20px 22px;border-left:1px solid var(--border)}.facts div:first-child{border-left:0}
+.facts b{display:block;font-size:34px;letter-spacing:-.04em;line-height:1.1;font-weight:600}.facts span{color:var(--muted);font-size:14px}
+ul.f{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 32px}
+ul.f li{padding:12px 0;border-bottom:1px solid var(--border)}ul.f b{font-weight:600}
+pre{margin:0;padding:18px 20px;border-radius:10px;background:var(--code);overflow-x:auto;font:400 14px/1.7 "Geist Mono",ui-monospace,monospace;border:1px solid var(--border)}
+p.note{color:var(--muted);max-width:70ch}footer{padding:40px 0 56px;color:var(--muted);font-size:14px}
+@media(max-width:820px){.hero{grid-template-columns:minmax(0,1fr);gap:32px;padding:24px 0 48px}.grid,ul.f{grid-template-columns:minmax(0,1fr)}.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.facts div:nth-child(3){border-left:0}.facts div:nth-child(n+3){border-top:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="brand" href="#"><span class="mark">P</span>Prumo</a>
+  <a class="btn ghost" href="https://github.com/PedroMaxis/ProjectMGMT">Código no GitHub</a>
+</header>
+
+<div class="hero">
+  <div>
+    <h1>Projetos e produtos, no mesmo prumo.</h1>
+    <p class="lead">Quadro kanban, sprints com burndown, roadmap de produto e documentos em Markdown, para uma equipe só. Feito em Rails 8.1.</p>
+    <div class="cta"><a class="btn" href="#rodar">Rodar na sua máquina</a><a class="btn ghost" href="#telas">Ver as telas</a></div>
+  </div>
+  <img class="shot" src="painel.png" width="1440" height="900" alt="Painel do Prumo com indicadores, sprints ativas e saúde dos projetos">
+</div>
+
+<section>
+  <div class="facts">
+    <div><b>76</b><span>testes automatizados</span></div>
+    <div><b>0</b><span>avisos do Brakeman</span></div>
+    <div><b>8</b><span>pessoas e 5 projetos no demo</span></div>
+    <div><b>3</b><span>papéis: admin, membro e leitor</span></div>
+  </div>
+</section>
+
+<section id="telas">
+  <h2>Telas</h2>
+  <div class="grid">
+    <figure><img class="shot" loading="lazy" src="quadro.png" width="1440" height="900" alt="Quadro kanban"><figcaption>Quadro<small>Arrastar e soltar, criação direta na coluna e filtros.</small></figcaption></figure>
+    <figure><img class="shot" loading="lazy" src="gaveta.png" width="1440" height="900" alt="Gaveta da tarefa"><figcaption>Gaveta da tarefa<small>Edição automática, comentários com menções e histórico.</small></figcaption></figure>
+    <figure><img class="shot" loading="lazy" src="backlog.png" width="1440" height="900" alt="Backlog e sprints"><figcaption>Backlog e sprints<small>Planejar, iniciar e concluir; as pendências vão para a próxima sprint.</small></figcaption></figure>
+    <figure><img class="shot" loading="lazy" src="relatorios.png" width="1440" height="900" alt="Relatórios com burndown"><figcaption>Relatórios<small>Burndown por snapshot diário, velocidade e vazão, em SVG gerado no servidor.</small></figcaption></figure>
+    <figure><img class="shot" loading="lazy" src="roadmap.png" width="1440" height="900" alt="Roadmap de produtos"><figcaption>Roadmap<small>Versões dos produtos ao longo do tempo.</small></figcaption></figure>
+    <figure><img class="shot" loading="lazy" src="documento.png" width="1440" height="900" alt="Documentos em Markdown"><figcaption>Documentos<small>Páginas em árvore com pré-visualização de Markdown ao vivo.</small></figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <h2>O que tem por baixo</h2>
+  <ul class="f">
+    <li><b>Posição fracionária.</b> Mover um cartão grava só a linha dele, sem renumerar a coluna.</li>
+    <li><b>Histórico por callbacks.</b> Toda mudança vira um evento com o autor.</li>
+    <li><b>Busca segura.</b> LIKE com ESCAPE explícito; % e _ não viram curinga.</li>
+    <li><b>Markdown seguro.</b> Redcarpet com filter_html e sanitize.</li>
+    <li><b>Permissões no servidor.</b> O leitor recebe 403 mesmo forçando a requisição.</li>
+    <li><b>Migração do legado.</b> Converte o banco antigo, com teste sobre o formato original.</li>
+  </ul>
+</section>
+
+<section id="rodar">
+  <h2>Rodar na sua máquina</h2>
+  <p class="note">O Prumo é uma aplicação Rails com banco SQLite, então precisa de um servidor e não roda no GitHub Pages. Com Ruby 4.0.9:</p>
+  <pre>git clone https://github.com/PedroMaxis/ProjectMGMT
+cd ProjectMGMT
+bin/setup --skip-server   # gems, banco e dados de demonstração
+bin/rails server          # http://localhost:3000</pre>
+  <p class="note">Na tela de entrada há login de demonstração com um clique (Marina é admin, Helena é leitora). A senha dos usuários do seed é <code>prumo123</code>.</p>
+</section>
+<footer>Projeto de portfólio de Pedro Sales. Dados fictícios de demonstração.</footer>
+</div>
+</body>
+</html>
