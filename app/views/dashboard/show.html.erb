@@ -58,6 +58,22 @@
         </table>
       </div>
     </section>
+
+    <section class="card">
+      <header><h2>Atividade recente</h2></header>
+      <ul class="list">
+        <% @events.each do |e| %>
+          <li style="align-items:flex-start">
+            <%= avatar e.user, size: 24 %>
+            <div class="grow small" style="color:var(--text)">
+              <strong><%= e.user&.first_name %></strong> <%= event_text(e) %>
+              <% if e.issue %><%= link_to e.issue.key, issue_path(e.issue), class: "link mono" %><% end %>
+              <br><small><%= ago e.created_at %></small>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </section>
   </div>
 
   <div class="stack">
@@ -101,22 +117,6 @@
           <div class="hbar"><span class="row"><%= avatar @people[uid], size: 22 %><span class="truncate"><%= @people[uid]&.first_name %></span></span><div class="track"><i style="width: <%= pts * 100 / max %>%"></i></div><b><%= pts %></b></div>
         <% end %>
       </div>
-    </section>
-
-    <section class="card">
-      <header><h2>Atividade recente</h2></header>
-      <ul class="list">
-        <% @events.each do |e| %>
-          <li style="align-items:flex-start">
-            <%= avatar e.user, size: 24 %>
-            <div class="grow small" style="color:var(--text)">
-              <strong><%= e.user&.first_name %></strong> <%= event_text(e) %>
-              <% if e.issue %><%= link_to e.issue.key, issue_path(e.issue), class: "link mono" %><% end %>
-              <br><small><%= ago e.created_at %></small>
-            </div>
-          </li>
-        <% end %>
-      </ul>
     </section>
   </div>
 </div>
