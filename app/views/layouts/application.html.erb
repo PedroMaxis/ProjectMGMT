@@ -1,27 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
   <head>
-    <title><%= content_for(:title) || "Project Management App" %></title>
+    <title><%= content_for(:title) ? "#{content_for(:title)} · Prumo" : "Prumo · Gestão de projetos e produtos" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="Prumo: gestão de projetos e produtos com quadro Kanban, sprints, roadmap e documentação.">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <script>try { var t = localStorage.getItem("prumo.theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body data-controller="theme palette nav">
+    <a class="skip" href="#main">Pular para o conteúdo</a>
+    <div class="app">
+      <aside class="side" data-nav-target="side">
+        <%= link_to root_path, class: "brand", "aria-label": "Prumo, painel" do %>
+          <span class="brand-mark"><%= icon :target, size: 18 %></span><span class="brand-name">Prumo</span>
+        <% end %>
+
+        <nav class="side-nav" aria-label="Principal">
+          <%= nav_item "Painel", root_path, :home %>
+          <%= nav_item "Projetos", projects_path, :folder, match: "/projects" %>
+          <%= nav_item "Produtos", products_path, :box, match: "/products" %>
+          <%= nav_item "Roadmap", roadmap_path, :map %>
+          <%= nav_item "Equipe", users_path, :users, match: "/users" %>
+        </nav>
+
+        <% projetos = Project.open.alphabetical.limit(12) %>
+        <% if projetos.any? %>
+          <p class="side-title">Projetos</p>
+          <nav class="side-projects" aria-label="Projetos">
+            <% projetos.each do |p| %>
+              <%= link_to project_path(p), class: ["side-project", request.path.start_with?("/projects/#{p.key}") && "active"].compact.join(" ") do %>
+                <i class="dot" style="<%= project_color_style(p) %>"></i><span><%= p.name %></span><small><%= p.key %></small>
+              <% end %>
+            <% end %>
+          </nav>
+        <% end %>
+
+        <div class="side-user">
+          <%= avatar current_user, size: 32 %>
+          <div><strong><%= current_user.name %></strong><small><%= enum_label(:user, :role, current_user.role) %></small></div>
+          <%= button_to logout_path, method: :delete, class: "icon-btn", title: "Sair", form: { class: "inline" } do %><%= icon :logout %><% end %>
+        </div>
+      </aside>
+
+      <div class="main-col">
+        <header class="topbar">
+          <button class="icon-btn menu-btn" data-action="nav#toggle" aria-label="Abrir menu"><%= icon :menu %></button>
+          <div class="crumbs"><%= yield :crumbs %></div>
+          <button class="search-trigger" data-action="palette#open" aria-label="Buscar">
+            <%= icon :search, size: 16 %><span>Buscar…</span><kbd>Ctrl K</kbd>
+          </button>
+          <button class="icon-btn" data-action="theme#toggle" aria-label="Alternar tema claro/escuro" title="Alternar tema"><span class="theme-sun"><%= icon :sun %></span><span class="theme-moon"><%= icon :moon %></span></button>
+        </header>
+
+        <main id="main" class="<%= yield(:main_class) %>">
+          <% flash.each do |type, msg| %>
+            <div class="flash flash-<%= flash_tone(type) %>" data-controller="flash" role="status"><%= msg %><button class="x" data-action="flash#close" aria-label="Fechar">×</button></div>
+          <% end %>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+
+    <%= render "shared/palette" %>
   </body>
 </html>

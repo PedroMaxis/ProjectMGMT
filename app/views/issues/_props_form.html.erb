@@ -1,0 +1,16 @@
+<%# Propriedades editáveis na hora: qualquer mudança envia o formulário. Locals: issue, members, sprints, epics, releases %>
+<%= form_with model: issue, url: issue_path(issue), method: :patch, data: { controller: "autosubmit", action: "change->autosubmit#submit" } do |f| %>
+  <dl class="prop-grid">
+    <dt>Status</dt><dd><%= f.select :status, Issue::STATUSES.map { |s| [enum_label(:issue, :status, s), s] }, {}, disabled: !can_edit? %></dd>
+    <dt>Tipo</dt><dd><%= f.select :kind, Issue::KINDS.map { |s| [enum_label(:issue, :kind, s), s] }, {}, disabled: !can_edit? %></dd>
+    <dt>Prioridade</dt><dd><%= f.select :priority, Issue::PRIORITIES.map { |s| [enum_label(:issue, :priority, s), s] }, {}, disabled: !can_edit? %></dd>
+    <dt>Responsável</dt><dd><%= f.collection_select :assignee_id, members, :id, :name, { include_blank: "Sem responsável" }, disabled: !can_edit? %></dd>
+    <dt>Estimativa</dt><dd><%= f.select :estimate, Issue::ESTIMATES, { include_blank: "Sem estimativa" }, disabled: !can_edit? %></dd>
+    <dt>Sprint</dt><dd><%= f.collection_select :sprint_id, sprints, :id, :name, { include_blank: "Backlog" }, disabled: !can_edit? %></dd>
+    <% unless issue.epic? %><dt>Épico</dt><dd><%= f.collection_select :parent_id, epics, :id, :title, { include_blank: "Nenhum" }, disabled: !can_edit? %></dd><% end %>
+    <% if releases.any? %><dt>Versão</dt><dd><%= f.collection_select :release_id, releases, :id, :name, { include_blank: "Nenhuma" }, disabled: !can_edit? %></dd><% end %>
+    <dt>Início</dt><dd><%= f.date_field :start_date, disabled: !can_edit? %></dd>
+    <dt>Prazo</dt><dd><%= f.date_field :due_date, disabled: !can_edit? %></dd>
+    <dt>Etiquetas</dt><dd><%= f.text_field :labels_text, placeholder: "api, mobile…", disabled: !can_edit? %></dd>
+  </dl>
+<% end %>

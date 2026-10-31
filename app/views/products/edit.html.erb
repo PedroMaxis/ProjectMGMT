@@ -1,0 +1,6 @@
+<% content_for :title, "Editar #{@product.name}" %>
+<% content_for :crumbs do %><%= link_to "Produtos", products_path %><span class="sep">/</span><%= link_to @product.name, product_path(@product) %><span class="sep">/</span><strong>Editar</strong><% end %>
+<div class="page-head"><div><h1>Editar produto</h1></div>
+  <%= button_to product_path(@product), method: :delete, class: "btn btn-danger", form: { class: "inline", data: { turbo_confirm: "Excluir o produto, suas versões e páginas? Os projetos continuam existindo." } } do %><%= icon :trash, size: 16 %> Excluir<% end %>
+</div>
+<section class="card card-pad" style="max-width: 820px"><%= render "form", product: @product %></section>

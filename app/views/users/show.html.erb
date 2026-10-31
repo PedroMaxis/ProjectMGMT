@@ -1,0 +1,17 @@
+<% content_for :title, @user.name %>
+<% content_for :crumbs do %><%= link_to "Equipe", users_path %><span class="sep">/</span><strong><%= @user.name %></strong><% end %>
+<div class="page-head"><div class="row"><%= avatar @user, size: 56 %><div><h1><%= @user.name %></h1><p><%= @user.job_title %> · <%= @user.email %></p></div></div></div>
+<div class="stats">
+  <div class="card stat"><span class="ico"><%= icon :list %></span><div><strong><%= @issues.size %></strong><span>Tarefas abertas</span></div></div>
+  <div class="card stat"><span class="ico ok"><%= icon :check %></span><div><strong><%= @done %></strong><span>Concluídas em 30 dias</span></div></div>
+  <div class="card stat"><span class="ico"><%= icon :folder %></span><div><strong><%= @projects.size %></strong><span>Projetos</span></div></div>
+</div>
+<div class="grid-2">
+  <section class="card"><header><h2>Tarefas atribuídas</h2></header>
+    <% if @issues.any? %><ul class="list"><% @issues.each do |i| %><li><%= kind_icon i.kind %><span class="mono small"><%= i.key %></span><%= link_to i.title, issue_path(i), class: "title grow truncate" %><%= status_chip i.status %><%= due_label i %></li><% end %></ul>
+    <% else %><div class="empty small"><p>Nada atribuído no momento.</p></div><% end %>
+  </section>
+  <section class="card"><header><h2>Projetos</h2></header>
+    <ul class="list"><% @projects.each do |p| %><li><i class="dot" style="<%= project_color_style(p) %>"></i><%= link_to p.name, project_path(p), class: "title grow" %><small class="mono"><%= p.key %></small></li><% end %></ul>
+  </section>
+</div>

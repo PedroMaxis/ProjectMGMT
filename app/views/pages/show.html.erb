@@ -1,0 +1,28 @@
+<% content_for :title, @page.title %>
+<% content_for :main_class, "full" %>
+<% if @space.is_a?(Project) %>
+  <%= render "shared/project_header", project: @space, current: @page.title %>
+<% else %>
+  <% content_for :crumbs do %><%= link_to "Produtos", products_path %><span class="sep">/</span><%= link_to @space.name, product_path(@space) %><span class="sep">/</span><strong><%= @page.title %></strong><% end %>
+<% end %>
+
+<div class="docs">
+  <aside class="card tree" aria-label="Páginas">
+    <div class="tree-title"><span>Páginas</span><% if can_edit? %><%= link_to icon(:plus, size: 14), (@space.is_a?(Project) ? new_project_page_path(@space) : new_product_page_path(@space)), title: "Nova página" %><% end %></div>
+    <%= render "pages/tree", pages: @tree, current: @page %>
+  </aside>
+
+  <article class="card doc">
+    <% if @page.ancestors.any? %><p class="small"><% @page.ancestors.each do |a| %><%= link_to a.title, page_path(a), class: "link" %> / <% end %></p><% end %>
+    <h1 class="doc-title"><span><%= @page.icon || "📄" %></span><%= @page.title %></h1>
+    <p class="doc-meta">Atualizada <%= ago @page.updated_at %><% if @page.author %> · criada por <%= @page.author.name %><% end %></p>
+    <div class="prose"><%= @page.body.present? ? render_markdown(@page.body) : tag.p("Página vazia. Clique em Editar para começar.", class: "muted") %></div>
+    <% if can_edit? %>
+      <div class="row-wrap" style="margin-top:28px; padding-top:16px; border-top:1px solid var(--border)">
+        <%= link_to edit_page_path(@page), class: "btn btn-ghost btn-sm" do %><%= icon :edit, size: 14 %> Editar<% end %>
+        <%= link_to (@space.is_a?(Project) ? new_project_page_path(@space, page: { parent_id: @page.id }) : new_product_page_path(@space, page: { parent_id: @page.id })), class: "btn btn-ghost btn-sm" do %><%= icon :plus, size: 14 %> Subpágina<% end %>
+        <%= button_to page_path(@page), method: :delete, class: "btn btn-danger btn-sm", form: { class: "inline", data: { turbo_confirm: "Excluir esta página e as subpáginas?" } } do %><%= icon :trash, size: 14 %> Excluir<% end %>
+      </div>
+    <% end %>
+  </article>
+</div>

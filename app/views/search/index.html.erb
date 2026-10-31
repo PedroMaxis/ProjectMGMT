@@ -1,0 +1,28 @@
+<% content_for :title, "Busca" %>
+<% content_for :crumbs do %><strong>Busca</strong><% end %>
+<div class="page-head"><div><h1>Busca</h1><p><%= @q.present? ? "Resultados para “#{@q}”" : "Digite ao menos 2 letras." %></p></div></div>
+<%= form_with url: search_path, method: :get, class: "filters" do %><%= search_field_tag :q, @q, placeholder: "Buscar…", autofocus: true, style: "min-width:320px" %><%= submit_tag "Buscar", class: "btn btn-sm" %><% end %>
+<% total = @results.values.sum(&:size) %>
+<% if @q.length >= 2 && total.zero? %>
+  <div class="empty"><div class="empty-icon"><%= icon :search, size: 26 %></div><h2>Nada encontrado</h2><p>Tente outra palavra ou a chave de uma tarefa, como WEB-12.</p></div>
+<% end %>
+<div class="stack">
+  <% { issues: "Tarefas", projects: "Projetos", products: "Produtos", pages: "Páginas", users: "Pessoas" }.each do |chave, nome| %>
+    <% itens = @results[chave] %>
+    <% next if itens.blank? %>
+    <section class="card"><header><h2><%= nome %> <small><%= itens.size %></small></h2></header>
+      <ul class="list">
+        <% itens.each do |i| %>
+          <li>
+            <% if chave == :issues %><%= kind_icon i.kind %><span class="mono small"><%= i.key %></span><%= link_to i.title, issue_path(i), class: "title grow" %><%= status_chip i.status %>
+            <% elsif chave == :projects %><i class="dot" style="<%= project_color_style(i) %>"></i><%= link_to i.name, project_path(i), class: "title grow" %><small class="mono"><%= i.key %></small>
+            <% elsif chave == :products %><%= icon :box, size: 16 %><%= link_to i.name, product_path(i), class: "title grow" %>
+            <% elsif chave == :pages %><span><%= i.icon || "📄" %></span><%= link_to i.title, page_path(i), class: "title grow" %><small><%= i.space.name %></small>
+            <% else %><%= avatar i, size: 26 %><%= link_to i.name, user_path(i), class: "title grow" %><small><%= i.job_title %></small>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</div>

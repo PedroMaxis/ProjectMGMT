@@ -1,0 +1,11 @@
+<%= link_to issue_path(issue), class: ["card-issue", issue.done? && "is-done"].compact.join(" "), draggable: can_edit?.to_s,
+      data: { issue_key: issue.key, issue_id: issue.id, points: issue.weight, turbo_frame: "issue_panel" } do %>
+  <% if issue.parent %><span class="epic-tag"><%= issue.parent.title %></span><% end %>
+  <span class="t"><%= issue.title %></span>
+  <% if issue.labels.any? %><span class="row-wrap" style="gap:4px"><% issue.labels.first(3).each { |l| concat label_chip(l) } %></span><% end %>
+  <span class="foot">
+    <%= kind_icon issue.kind %><span class="key"><%= issue.key %></span><%= priority_icon issue.priority %><%= due_label issue %>
+    <% if issue.estimate %><span class="est"><%= issue.estimate %></span><% end %>
+    <%= avatar issue.assignee, size: 22 %>
+  </span>
+<% end %>

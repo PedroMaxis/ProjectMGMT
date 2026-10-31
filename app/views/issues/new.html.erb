@@ -1,0 +1,3 @@
+<% content_for :title, "Nova tarefa" %>
+<%= render "shared/project_header", project: @project, current: "Nova tarefa" %>
+<section class="card card-pad" style="max-width: 860px"><%= render "form", issue: @issue, project: @project, members: @members, sprints: @sprints, epics: @epics, releases: @releases %></section>

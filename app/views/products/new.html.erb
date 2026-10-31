@@ -1,0 +1,4 @@
+<% content_for :title, "Novo produto" %>
+<% content_for :crumbs do %><%= link_to "Produtos", products_path %><span class="sep">/</span><strong>Novo</strong><% end %>
+<div class="page-head"><div><h1>Novo produto</h1></div></div>
+<section class="card card-pad" style="max-width: 820px"><%= render "form", product: @product %></section>

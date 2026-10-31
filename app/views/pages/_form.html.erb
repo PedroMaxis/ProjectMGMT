@@ -1,0 +1,13 @@
+<%= form_with model: page, url: (page.persisted? ? page_path(page) : (space.is_a?(Project) ? project_pages_path(space) : product_pages_path(space))) do |f| %>
+  <% if page.errors.any? %><div class="errors"><strong>Não foi possível salvar:</strong><ul><% page.errors.full_messages.each { |m| concat tag.li(m) } %></ul></div><% end %>
+  <div class="form-grid" style="margin-bottom:14px">
+    <div class="field c1" style="grid-column: span 1"><%= f.label :icon, "Ícone" %><%= f.text_field :icon, maxlength: 4, placeholder: "📄" %></div>
+    <div class="field c3" style="grid-column: span 3"><%= f.label :title %><%= f.text_field :title, required: true, autofocus: true %></div>
+    <div class="field c2"><%= f.label :parent_id, "Dentro de" %><%= f.collection_select :parent_id, space.pages.where.not(id: [page.id, *(page.persisted? ? page.descendant_ids : [])].compact).order(:title), :id, :title, include_blank: "Raiz" %></div>
+  </div>
+  <div class="editor" data-controller="markdown">
+    <div class="field"><%= f.label :body, "Conteúdo (Markdown)" %><%= f.text_area :body, data: { markdown_target: "input", action: "input->markdown#update" }, placeholder: "# Título\n\nEscreva em **Markdown**: listas, tabelas, código…" %></div>
+    <div class="field"><label>Pré-visualização</label><div class="preview prose" data-markdown-target="preview"></div></div>
+  </div>
+  <div class="form-actions"><%= link_to "Cancelar", (page.persisted? ? page_path(page) : space), class: "btn btn-ghost" %><%= f.submit (page.persisted? ? "Salvar página" : "Criar página"), class: "btn" %></div>
+<% end %>

@@ -1,0 +1,91 @@
+<% content_for :title, "#{@issue.key} #{@issue.title}" %>
+<% unless turbo_frame_request? %>
+  <% content_for :crumbs do %><%= link_to "Projetos", projects_path %><span class="sep">/</span><%= link_to @issue.project.name, project_path(@issue.project) %><span class="sep">/</span><%= link_to "Quadro", board_project_path(@issue.project) %><span class="sep">/</span><strong class="mono"><%= @issue.key %></strong><% end %>
+<% end %>
+
+<turbo-frame id="issue_panel">
+  <div class="<%= turbo_frame_request? ? 'drawer' : 'page-issue' %>" <%= tag.attributes(data: { controller: "drawer" }) if turbo_frame_request? %>>
+    <% if turbo_frame_request? %>
+      <div class="drawer-head">
+        <%= kind_icon @issue.kind %><span class="mono"><%= @issue.key %></span><span class="grow"></span>
+        <%= link_to issue_path(@issue), class: "icon-btn", title: "Abrir em página inteira", data: { turbo_frame: "_top" } do %><%= icon :link, size: 16 %><% end %>
+        <button class="icon-btn" data-action="drawer#close" aria-label="Fechar"><%= icon :x %></button>
+      </div>
+    <% end %>
+
+    <div class="<%= turbo_frame_request? ? 'issue-detail' : 'issue-page' %>">
+      <div class="stack" style="min-width:0">
+        <div>
+          <% unless turbo_frame_request? %><div class="row" style="margin-bottom:8px"><%= kind_icon @issue.kind %><span class="mono small"><%= @issue.key %></span><%= status_chip @issue.status %><% if @issue.parent %><%= link_to @issue.parent.title, issue_path(@issue.parent), class: "badge badge-accent" %><% end %></div><% end %>
+          <h1><%= @issue.title %></h1>
+          <p class="small" style="margin-top:4px">Criada <%= ago @issue.created_at %><% if @issue.reporter %> por <strong><%= @issue.reporter.first_name %></strong><% end %></p>
+        </div>
+
+        <%# propriedades vêm primeiro na gaveta; na página inteira ficam na coluna da direita %>
+        <% if turbo_frame_request? %><%= render "props_form", issue: @issue, members: @members, sprints: @sprints, epics: @epics, releases: @releases %><% end %>
+
+        <section>
+          <h3 style="margin-bottom:8px">Descrição</h3>
+          <% if @issue.description.present? %><div class="prose"><%= render_markdown @issue.description %></div><% else %><p class="muted">Sem descrição.</p><% end %>
+          <% if can_edit? %>
+            <details class="disclosure" style="margin-top:12px">
+              <summary class="link">Editar título e descrição</summary>
+              <%= form_with model: @issue, url: issue_path(@issue), method: :patch, class: "stack", style: "margin-top:10px" do |f| %>
+                <div class="field"><%= f.label :title %><%= f.text_field :title %></div>
+                <div class="field"><%= f.label :description %><%= f.text_area :description, rows: 8 %><span class="hint">Aceita Markdown</span></div>
+                <div class="form-actions" style="margin:0"><%= f.submit "Salvar", class: "btn btn-sm" %></div>
+              <% end %>
+            </details>
+          <% end %>
+        </section>
+
+        <% if @issue.epic? %>
+          <section>
+            <h3 style="margin-bottom:8px">Tarefas do épico <small>(<%= @children.count(&:done?) %>/<%= @children.size %> concluídas)</small></h3>
+            <% if @children.any? %>
+              <div class="card"><% @children.each do |c| %><div class="issue-row"><%= kind_icon c.kind %><span class="key"><%= c.key %></span><%= link_to c.title, issue_path(c), class: "t", data: { turbo_frame: "_top" } %><%= status_chip c.status %><%= avatar c.assignee, size: 22 %></div><% end %></div>
+            <% else %><p class="muted">Nenhuma tarefa vinculada ainda.</p><% end %>
+          </section>
+        <% end %>
+
+        <section>
+          <h3 style="margin-bottom:10px">Comentários <small>(<%= @comments.size %>)</small></h3>
+          <div class="stack">
+            <% @comments.each do |c| %>
+              <div class="comment">
+                <%= avatar c.user, size: 30 %>
+                <div class="bubble">
+                  <div class="who"><strong><%= c.user.name %></strong><small><%= ago c.created_at %></small>
+                    <% if c.user == current_user || current_user.admin? %><%= button_to issue_comment_path(@issue, c), method: :delete, class: "icon-btn", style: "width:24px;height:24px", form: { class: "inline", data: { turbo_confirm: "Excluir este comentário?" } }, title: "Excluir" do %><%= icon :trash, size: 14 %><% end %><% end %>
+                  </div>
+                  <div class="prose" style="font-size:14px"><%= render_markdown c.body %></div>
+                </div>
+              </div>
+            <% end %>
+            <% if can_edit? %>
+              <%= form_with model: [@issue, Comment.new], url: issue_comments_path(@issue), class: "comment" do |f| %>
+                <%= avatar current_user, size: 30 %>
+                <div class="grow stack" style="gap:8px"><%= f.text_area :body, rows: 3, placeholder: "Escreva um comentário… use @nome para mencionar alguém", required: true %><div><%= f.submit "Comentar", class: "btn btn-sm" %></div></div>
+              <% end %>
+            <% end %>
+          </div>
+        </section>
+
+        <section>
+          <h3 style="margin-bottom:10px">Histórico</h3>
+          <ul class="timeline">
+            <% @events.each do |e| %><li><%= avatar e.user, size: 22 %><span><strong><%= e.user&.first_name %></strong> <%= event_text e %> · <small><%= ago e.created_at %></small></span></li><% end %>
+          </ul>
+        </section>
+
+        <% if can_edit? %>
+          <div><%= button_to issue_path(@issue), method: :delete, class: "btn btn-danger btn-sm", form: { class: "inline", data: { turbo_confirm: "Excluir #{@issue.key}? Isso não pode ser desfeito.", turbo_frame: "_top" } } do %><%= icon :trash, size: 14 %> Excluir tarefa<% end %></div>
+        <% end %>
+      </div>
+
+      <% unless turbo_frame_request? %>
+        <aside class="card card-pad"><h3 style="margin-bottom:12px">Detalhes</h3><%= render "props_form", issue: @issue, members: @members, sprints: @sprints, epics: @epics, releases: @releases %></aside>
+      <% end %>
+    </div>
+  </div>
+</turbo-frame>

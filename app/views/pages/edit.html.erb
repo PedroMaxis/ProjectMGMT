@@ -1,0 +1,4 @@
+<% content_for :title, "Editar #{@page.title}" %>
+<% content_for :crumbs do %><%= link_to @space.name, @space %><span class="sep">/</span><%= link_to @page.title, page_path(@page) %><span class="sep">/</span><strong>Editar</strong><% end %>
+<div class="page-head"><div><h1>Editar página</h1></div></div>
+<section class="card card-pad"><%= render "form", page: @page, space: @space %></section>
